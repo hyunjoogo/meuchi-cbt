@@ -1,0 +1,14 @@
+{
+  "name": "meuchi-cbt-front",
+  "version": "1.0.0",
+  "description": "메루치양식장 운동페이지 CBT 프론트",
+  "main": "index.js",
+  "scripts": {
+    "dev" : "next"
+  },
+  "author": "HyunJoo",
+  "license": "ISC",
+  "dependencies": {
+    "next": "^9.5.5"
+  }
+}
