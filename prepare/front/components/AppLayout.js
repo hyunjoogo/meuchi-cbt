@@ -29,6 +29,9 @@ const AppLayout = ({children}) => {
             <Link href="/profile" passHref>
               <Nav.Link>프로필</Nav.Link>
             </Link>
+            <Link href="/signup" passHref>
+              <Nav.Link>회원가입</Nav.Link>
+            </Link>
           </Nav>
         </Navbar.Collapse>
       </Navbar>
