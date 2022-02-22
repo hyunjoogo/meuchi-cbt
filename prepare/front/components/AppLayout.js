@@ -1,11 +1,36 @@
-import React from 'react';
+import React, {useCallback, useState} from 'react';
 import {Container, Nav, Navbar, NavDropdown} from "react-bootstrap";
 import {useRouter} from "next/router";
 import Link from 'next/link';
+import {useMutation, useQuery, useQueryClient} from "react-query";
+import {logOutAPI} from "../apis/user";
 
 const AppLayout = ({children}) => {
   const router = useRouter()
   const currentPath = router.pathname
+  const queryClient = useQueryClient();
+  const [loading, setLoading] = useState(false);
+  const {data: me} = useQuery('user');
+
+  const mutation = useMutation(logOutAPI, {
+    onMutate: () => {
+      setLoading(true);
+    },
+    onError: (error) => {
+      alert(error.response?.data);
+    },
+    onSuccess: () => {
+      queryClient.setQueryData('user', null);
+    },
+    onSettled: () => {
+      setLoading(false);
+    },
+  });
+
+  const onLogOut = useCallback(() => {
+    console.log('logout mutate');
+    mutation.mutate();
+  }, [mutation]);
 
   return (
     <>
@@ -29,9 +54,13 @@ const AppLayout = ({children}) => {
             <Link href="/profile" passHref>
               <Nav.Link>프로필</Nav.Link>
             </Link>
-            <Link href="/signup" passHref>
-              <Nav.Link>회원가입</Nav.Link>
-            </Link>
+            {me ?
+              <Link href="/" passHref >
+                <Nav.Link onClick={onLogOut}>로그아웃</Nav.Link>
+              </Link>
+              : <Link href="/signup" passHref>
+                <Nav.Link>회원가입</Nav.Link>
+              </Link>}
           </Nav>
         </Navbar.Collapse>
       </Navbar>

@@ -3,27 +3,33 @@ import useInput from "../hooks/useInput";
 import {Button, Form, Spinner} from "react-bootstrap";
 import {loginAPI} from "../apis/user";
 import Router from "next/router";
+import {useMutation, useQueryClient} from "react-query";
 
 const LoginForm = () => {
+  const queryClient = useQueryClient();
   const [email, onChangeEmail] = useInput('');
   const [password, onChangePassword] = useInput('');
   const [loading, setLoading] = useState(false);
 
+  const mutation = useMutation('user', loginAPI, {
+    onMutate: () => {
+      setLoading(true);
+    },
+    onError: (error) => {
+      alert(error.response?.data);
+    },
+    onSuccess: (user) => {
+      queryClient.setQueryData('user', user);
+    },
+    onSettled: () => {
+      setLoading(false);
+    },
+  });
+
   const onSubmit = useCallback((event) => {
     event.preventDefault();
-    setLoading(true);
-    loginAPI({email, password})
-      .then((res) => {
-        console.log(res)
-      })
-      .catch((error) => {
-        alert(error.response.data);
-      })
-      .finally(() => {
-        setLoading(false);
-      });
-    setLoading(false);
-  }, [email, password])
+    mutation.mutate({email, password});
+  }, [email, password, mutation])
 
   return (
     <Form onSubmit={onSubmit}>

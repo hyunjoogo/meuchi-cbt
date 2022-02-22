@@ -15,3 +15,14 @@ export function signUpAPI(data) {
 export function loginAPI(data) {
   return axios.post('/user/login', data).then((response) => response.data);
 }
+
+// 로그아웃
+export function logOutAPI() {
+  return axios.post('/user/logout').then((response) => response.data);
+}
+
+// 로그인 되어 있으면 유저 정보 가지고 오기
+export function loadMyInfoAPI() {
+  return axios.get('/user').then((response) => response.data);
+}
+

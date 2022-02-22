@@ -6,6 +6,26 @@ const {User} = require("../models");
 
 const router = express.Router();
 
+// 유저정보 가지고 오기 - GET /user
+router.get("/", async (req, res, next) => {
+  try {
+    if (req.user) {
+      const fullUserWithoutPassword = await User.findOne({
+        where: { id: req.user.id },
+        attributes: {
+          exclude: ["password", "createdAt", "updatedAt"],
+        },
+      });
+      res.status(200).json(fullUserWithoutPassword);
+    } else {
+      res.status(200).json(null);
+    }
+  } catch (error) {
+    console.error(error);
+    next(error);
+  }
+});
+
 // 로그인 - POST /user/login
 router.post('/login', async (req, res, next) => {
   passport.authenticate("local", (err, user, info) => {
@@ -22,34 +42,18 @@ router.post('/login', async (req, res, next) => {
         console.error(loginErr);
         return next(loginErr);
       }
-      // const fullUserWithoutPassword = await User.findOne({
-      //   where: { id: user.id },
-      //   attributes: {
-      //     exclude: ["password"],
-      //   },
-      //   include: [
-      //     {
-      //       model: Post,
-      //       attributes: ["id"],
-      //     },
-      //     {
-      //       model: User,
-      //       as: "Followings",
-      //       attributes: ["id"],
-      //     },
-      //     {
-      //       model: User,
-      //       as: "Followers",
-      //       attributes: ["id"],
-      //     },
-      //   ],
-      // });
-      return res.status(200).json(user);
+      const fullUserWithoutPassword = await User.findOne({
+        where: { id: user.id },
+        attributes: {
+          exclude: ["password"],
+        },
+      });
+      return res.status(200).json(fullUserWithoutPassword);
     });
   })(req, res, next);
 });
 
-// 회원가 - POST /user
+// 회원가입 - POST /user
 router.post('/', async (req, res, next) => {
   try {
     const checkUser = await User.findOne({
