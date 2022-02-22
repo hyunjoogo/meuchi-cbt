@@ -30,6 +30,7 @@ const Signup = () => {
             />
             <div>{errors?.email?.message}</div>
           </Form.Group>
+
           <Form.Group controlId="name">
             <Form.Label column="sm">이름</Form.Label>
             <Form.Control
@@ -44,6 +45,7 @@ const Signup = () => {
             />
             <div>{errors?.name?.message}</div>
           </Form.Group>
+
           <Form.Group controlId="password">
             <Form.Label column="sm">비밀번호</Form.Label>
             <Form.Control
@@ -63,6 +65,7 @@ const Signup = () => {
             />
             <div>{errors?.password?.message}</div>
           </Form.Group>
+
           <Form.Group controlId="confirmPassword">
             <Form.Label column="sm">비밀번호 확인</Form.Label>
             <Form.Control
@@ -80,7 +83,19 @@ const Signup = () => {
             />
             <div>{errors?.confirmPassword?.message}</div>
           </Form.Group>
-          <Button variant="primary" size="sm" type="submit">저장</Button>
+
+          <Form.Group controlId="confirmAccess">
+            <Form.Check>
+              <Form.Check.Input
+                isValid
+                {...register("confirmAccess", {
+                  required: "체크해주세요.",
+                })}  />
+              <Form.Check.Label>회원가입에 동의합니다.</Form.Check.Label>
+            </Form.Check>
+            <div>{errors?.confirmAccess?.message}</div>
+          </Form.Group>
+          <Button variant="primary" size="sm" type="submit">회원가입</Button>
         </Form>
       </Container>
     </AppLayout>
