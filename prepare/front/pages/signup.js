@@ -22,7 +22,6 @@ const Signup = () => {
       .finally(() => {
         setLoading(false);
       });
-    setLoading(false);
   }
 
   return (

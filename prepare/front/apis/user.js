@@ -10,3 +10,8 @@ axios.defaults.withCredentials = true;
 export function signUpAPI(data) {
   return axios.post('/user', data).then((response) => response.data);
 }
+
+// 로그인
+export function loginAPI(data) {
+  return axios.post('/user/login', data).then((response) => response.data);
+}

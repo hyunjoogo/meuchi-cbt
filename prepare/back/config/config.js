@@ -1,7 +1,12 @@
-{
+const dotenv = require('dotenv');
+
+dotenv.config();
+
+
+module.exports = {
   "development": {
     "username": "root",
-    "password": "rlaguswn3#",
+    "password": process.env.DB_PASSWORD,
     "database": "meuchi-cbt",
     "host": "127.0.0.1",
     "dialect": "mysql"
@@ -20,4 +25,4 @@
     "host": "127.0.0.1",
     "dialect": "mysql"
   }
-}
+};
