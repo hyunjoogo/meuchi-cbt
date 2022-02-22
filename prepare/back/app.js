@@ -2,6 +2,7 @@ const express = require('express');
 const userRouter = require('./routes/user');
 const dietRouter = require('./routes/diet');
 const db = require('./models');
+const cors = require('cors');
 const app = express();
 
 db.sequelize.sync()
@@ -10,6 +11,13 @@ db.sequelize.sync()
   })
   .catch(console.error);
 
+app.use(cors({
+  origin: true,
+  credentials: true,
+}));
+
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
 app.get('/', (req, res) => {
   res.send('hello, express');

@@ -1,12 +1,28 @@
-import React from 'react';
+import React, {useState} from 'react';
 import {useForm} from "react-hook-form";
 import AppLayout from "../components/AppLayout";
-import {Button, Col, Container, Form, Row} from "react-bootstrap";
+import {Button, Col, Container, Form, Row, Spinner} from "react-bootstrap";
+import {signUpAPI} from "../apis/user";
+import Router from 'next/router';
 
 const Signup = () => {
+  const [loading, setLoading] = useState(false);
+
   const {register, handleSubmit, watch, getValues, formState: {errors}} = useForm();
   const onSubmit = data => {
-    console.log(data);
+    const { email, password, name, confirmAccess } = data;
+    setLoading(true);
+    signUpAPI({ email, password, name, confirmAccess })
+      .then(() => {
+        Router.replace('/');
+      })
+      .catch((error) => {
+        alert(error.response.data);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+    setLoading(false);
   }
 
   return (
@@ -95,7 +111,16 @@ const Signup = () => {
             </Form.Check>
             <div>{errors?.confirmAccess?.message}</div>
           </Form.Group>
-          <Button variant="primary" size="sm" type="submit">회원가입</Button>
+          <Button variant="primary" size="sm" type="submit">
+            {loading && <Spinner
+              as="span"
+              animation="border"
+              size="sm"
+              role="status"
+              aria-hidden="true"
+              className="me-2"
+            />}
+            회원가입</Button>
         </Form>
       </Container>
     </AppLayout>

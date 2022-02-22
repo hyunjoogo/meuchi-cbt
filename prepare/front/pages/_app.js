@@ -24,7 +24,7 @@ const Meuchi = ({Component, pageProps}) => {
 };
 
 export function reportWebVitals(metric) {
-  console.log(metric);
+  // console.log(metric);
 }
 
 export default Meuchi
