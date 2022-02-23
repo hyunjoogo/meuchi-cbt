@@ -5,10 +5,10 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.STRING(10),
     },
     calorie : {
-      type: DataTypes.FLOAT(5,2),
+      type: DataTypes.STRING(5),
     },
     weight : {
-      type: DataTypes.FLOAT(5,2),
+      type: DataTypes.STRING(3),
     },
     // UserId :
   }, {
