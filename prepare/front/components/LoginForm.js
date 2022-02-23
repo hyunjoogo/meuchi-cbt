@@ -19,6 +19,7 @@ const LoginForm = () => {
       alert(error.response?.data);
     },
     onSuccess: (user) => {
+      console.log(user)
       queryClient.setQueryData('user', user);
     },
     onSettled: () => {

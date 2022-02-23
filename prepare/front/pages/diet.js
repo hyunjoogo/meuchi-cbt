@@ -3,22 +3,69 @@ import React, {useCallback, useEffect, useState} from "react";
 import {Button, Col, Container, Form, Row} from "react-bootstrap";
 import {addDay, format, now, subtractDay} from "../utils/DateUtil";
 import useInput from "../hooks/useInput";
+import {useMutation, useQuery, useQueryClient} from "react-query";
+import {loadMyInfoAPI, loginAPI} from "../apis/user";
+import {addDietAPI, loadDietAPI} from "../apis/diet";
+import {Router, useRouter} from "next/router";
 
 
 const Diet = () => {
-  const [calorie, onChangeCalorie] = useInput('');
-  const [weight, onChangeWeight] = useInput('');
+  const router = useRouter()
+  const queryClient = useQueryClient();
+  const {data: me} = useQuery('user', loadMyInfoAPI);
+  const [calorie, onChangeCalorie, setCalorie] = useInput('');
+  const [weight, onChangeWeight, setWeight] = useInput('');
   const [date, setDate] = useState(format(now()));
+  const [loading, setLoading] = useState(false);
+
+  const [dietId, setDietId] = useState();
+
+  const mutation = useMutation('diet', addDietAPI, {
+    onMutate: () => {
+      setLoading(true);
+    },
+    onError: (error) => {
+      alert(error.response?.data);
+    },
+    onSuccess: (diet) => {
+      queryClient.setQueryData('diet', diet);
+    },
+    onSettled: () => {
+      setLoading(false);
+    },
+  });
 
   useEffect(() => {
     // 서버에서 해당날짜의 칼로리, 체중 받아오기
     // 받아온 값 set하기
-  }, [])
+    if (!me) {
+      return router.replace("/");
+    }
+
+  }, [date])
+
+  const fetch = () => {
+    loadDietAPI(me.id, date)
+      .then(res => {
+        setCalorie(res.calorie);
+        setWeight(res.weight);
+        setDietId(res.id);
+      })
+  }
 
   const onSubmitForm = useCallback((event) => {
     event.preventDefault();
-    console.log(calorie, weight)
-  }, [calorie, weight]);
+    if (!me.id) {
+      return alert('로그인을 해주세요!');
+    }
+    mutation.mutate({
+      calorie: calorie === "" ? null : calorie,
+      weight: weight === "" ? null : weight,
+      date,
+      userId: me.id,
+      dietId
+    });
+  }, [calorie, weight, date]);
 
   const onChangeDate = useCallback((event) => {
     const name = event.target.dataset.name;
@@ -45,17 +92,25 @@ const Diet = () => {
           <Col className="d-flex flex-row justify-content-center">
             <Form className="d-flex flex-row justify-content-center"
                   onSubmit={onSubmitForm}>
-              <Form.Group controlId="calorie">
-                <Form.Label column="sm">섭취 칼로리</Form.Label>
-                <Form.Control type="number" value={calorie} onChange={onChangeCalorie} placeholder="섭취 칼로리량을 입력해주세요."/>
-              </Form.Group>
-              <Form.Group controlId="weight">
-                <Form.Label column="sm">체중</Form.Label>
-                <Form.Control type="number" value={weight} onChange={onChangeWeight} placeholder="체중을 입력해주세요."/>
-              </Form.Group>
-              <Button variant="primary" size="sm" type="submit">저장</Button>
+              <div>
+                <label>섭취 칼로리</label>
+                <input
+                  type="number"
+                  value={calorie}
+                  onChange={onChangeCalorie}
+                  onBlur={onSubmitForm}/>
+              </div>
+              <div>
+                <label>체중</label>
+                <input
+                  type="number"
+                  value={weight}
+                  onChange={onChangeWeight}
+                  onBlur={onSubmitForm}/>
+              </div>
             </Form>
           </Col>
+          {/*<Button variant="primary" size="sm" type="submit">저장</Button>*/}
         </Row>
 
         7일 1달 3개월 그래프 보여주기
